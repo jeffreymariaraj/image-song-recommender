@@ -1,8 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { analyzeImage } from '../services/api';
+import { ThemeContext } from '../App';
 
 const ImageUploader = ({ setIsLoading, setError, setRecommendations, setImagePreview, setImageFeatures, resetState }) => {
+  const { isDark } = useContext(ThemeContext);
+  
   // Handle file drop or selection
   const onDrop = useCallback(async (acceptedFiles) => {
     // Only process the first file if multiple files are dropped
@@ -64,15 +67,26 @@ const ImageUploader = ({ setIsLoading, setError, setRecommendations, setImagePre
     <div className="mt-8">
       <div 
         {...getRootProps()} 
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-          isDragActive ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 hover:border-indigo-400'
-        }`}
+        className={`
+          border-3 border-dashed rounded-xl p-12 
+          transition-all duration-300 ease-in-out
+          transform hover:scale-[1.02]
+          ${
+            isDragActive 
+              ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' 
+              : isDark
+                ? 'border-gray-600 hover:border-purple-400 hover:bg-purple-900/20'
+                : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50/50'
+          }
+        `}
       >
         <input {...getInputProps()} />
         
         <div className="flex flex-col items-center justify-center">
           <svg 
-            className={`w-16 h-16 mb-4 ${isDragActive ? 'text-indigo-500' : 'text-gray-400'}`} 
+            className={`w-20 h-20 mb-6 transition-colors duration-300 ${
+              isDragActive ? 'text-purple-500' : 'text-gray-400'
+            }`} 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24" 
@@ -86,15 +100,19 @@ const ImageUploader = ({ setIsLoading, setError, setRecommendations, setImagePre
             ></path>
           </svg>
           
-          <h3 className="mb-2 text-lg font-medium">
+          <h3 className="mb-3 text-xl font-semibold text-gray-700">
             {isDragActive ? 'Drop your image here' : 'Drag & drop your image here'}
           </h3>
           
-          <p className="mb-4 text-sm text-gray-500">
+          <p className="mb-6 text-gray-500">
             or click to browse from your device
           </p>
           
-          <p className="text-xs text-gray-400">
+          <button className="px-6 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors">
+            Choose File
+          </button>
+          
+          <p className="mt-6 text-sm text-gray-400">
             Supported formats: JPEG, PNG, GIF, WebP (max 5MB)
           </p>
         </div>
